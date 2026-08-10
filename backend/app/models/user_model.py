@@ -1,6 +1,8 @@
+from datetime import datetime,timezone
+
 from sqlalchemy import Column, Integer, String, DateTime
 
-from backend.app.database.database import Base
+from app.database.database import Base
 
 
 class UserModel(Base):
@@ -9,5 +11,9 @@ class UserModel(Base):
     username =Column(String,nullable=False)
     email=Column(String,unique=True,nullable=False)
     hashed_password =Column(String,nullable=False)
-    created_at=Column(DateTime,nullable=False)
-    
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc)
+    )
+

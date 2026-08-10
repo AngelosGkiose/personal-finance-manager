@@ -1,4 +1,0 @@
-
-sqlalchemy
-pydantic-settings
-pydantic
