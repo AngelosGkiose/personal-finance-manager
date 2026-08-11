@@ -12,3 +12,6 @@ def add_user(db:Session,user:UserModel):
     db.commit()
     db.refresh(user)
     return user
+
+def get_user_by_id(db:Session,user_id:int):
+    return db.query(UserModel).filter(UserModel.id == user_id).first()

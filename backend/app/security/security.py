@@ -28,7 +28,7 @@ def create_access_token(data:dict)->str:
 
 def decode_access_token(token:str)->dict|None:
     try:
-        payload=jwt.decode(token,settings.secret_key,algorithm=settings.algorithm)
+        payload=jwt.decode(token,settings.secret_key,algorithms=[settings.algorithm])
         return payload
     except InvalidTokenError:
         return None
