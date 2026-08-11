@@ -11,6 +11,7 @@ from app.database.database import Base
 # Import models so they are registered in Base.metadata
 from app.models.user_model import UserModel
 from app.models.category_model import CategoryModel
+from app.models.expense_model import ExpenseModel
 
 
 config = context.config

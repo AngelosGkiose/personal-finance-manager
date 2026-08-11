@@ -18,7 +18,7 @@ class UserModel(Base):
         default=lambda: datetime.now(timezone.utc)
     )
     categories=relationship("CategoryModel",back_populates="user")
-    expenses = relationship("ExpensesModel",back_populates="user")
+    expenses = relationship("ExpenseModel",back_populates="user")
 
 
 

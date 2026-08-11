@@ -25,4 +25,4 @@ class CategoryModel(Base):
     user_id = Column(Integer,ForeignKey('users.id'),nullable=False)
 
     user=relationship("UserModel",back_populates="categories")
-    expenses = relationship("ExpensesModel",back_populates="category")
+    expenses = relationship("ExpenseModel",back_populates="category")
