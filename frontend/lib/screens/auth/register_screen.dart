@@ -7,20 +7,28 @@ class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<RegisterScreen> createState() =>
+      _RegisterScreenState();
 }
 
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState
+    extends State<RegisterScreen> {
+
   final _formKey = GlobalKey<FormState>();
 
-  final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _usernameController =
+      TextEditingController();
+
+  final _emailController =
+      TextEditingController();
+
+  final _passwordController =
+      TextEditingController();
 
   bool _isLoading = false;
   String? _errorMessage;
-  String? _successMessage;
+
 
   @override
   void dispose() {
@@ -31,6 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -39,27 +48,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
-      _successMessage = null;
     });
 
     try {
       await AuthService.register(
-        username: _usernameController.text.trim(),
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+        username:
+            _usernameController.text.trim(),
+        email:
+            _emailController.text.trim(),
+        password:
+            _passwordController.text,
       );
 
       if (!mounted) {
         return;
       }
 
-      setState(() {
-        _successMessage = 'Registration successful';
-      });
+      Navigator.pop(
+        context,
+        true,
+      );
 
-      _usernameController.clear();
-      _emailController.clear();
-      _passwordController.clear();
     } catch (error) {
       if (!mounted) {
         return;
@@ -70,6 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             .toString()
             .replaceFirst('Exception: ', '');
       });
+
     } finally {
       if (mounted) {
         setState(() {
@@ -79,25 +89,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
+
           child: Column(
             children: [
               TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(
+                controller:
+                    _usernameController,
+                decoration:
+                    const InputDecoration(
                   labelText: 'Username',
                 ),
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
+                  if (value == null ||
+                      value.trim().isEmpty) {
                     return 'Username is required';
                   }
 
@@ -107,12 +123,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                keyboardType:
+                    TextInputType.emailAddress,
+                decoration:
+                    const InputDecoration(
                   labelText: 'Email',
                 ),
-                keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
+                  if (value == null ||
+                      value.trim().isEmpty) {
                     return 'Email is required';
                   }
 
@@ -121,13 +140,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
 
               TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
+                controller:
+                    _passwordController,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(
                   labelText: 'Password',
                 ),
-                obscureText: true,
                 validator: (value) {
-                  if (value == null || value.length < 8) {
+                  if (value == null ||
+                      value.length < 8) {
                     return 'Password must be at least 8 characters';
                   }
 
@@ -140,13 +162,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (_errorMessage != null)
                 Text(_errorMessage!),
 
-              if (_successMessage != null)
-                Text(_successMessage!),
-
               const SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: _isLoading ? null : _register,
+                onPressed:
+                    _isLoading ? null : _register,
                 child: _isLoading
                     ? const CircularProgressIndicator()
                     : const Text('Register'),
