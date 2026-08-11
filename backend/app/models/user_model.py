@@ -17,3 +17,23 @@ class UserModel(Base):
         default=lambda: datetime.now(timezone.utc)
     )
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
