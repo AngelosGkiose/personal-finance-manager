@@ -1,6 +1,7 @@
 from datetime import datetime,timezone
 
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 
 from app.database.database import Base
 
@@ -16,7 +17,7 @@ class UserModel(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc)
     )
-
+    categories=relationship("CategoryModel",back_populates="user")
 
 
 
