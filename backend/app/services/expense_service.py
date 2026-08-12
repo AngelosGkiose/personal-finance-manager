@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
+
 from app.models.expense_model import ExpenseModel
 from app.models.user_model import UserModel
 from app.repositories.category_repository import get_category_by_id
@@ -19,8 +20,14 @@ def create_expense_service(request:ExpenseCreate,current_user:UserModel,db:Sessi
                          category_id=category.id,user_id=current_user.id)
     return add_expense(db,expense)
 
-def get_expenses_service(current_user:UserModel,db:Session):
-    return get_expenses_repo(db,current_user.id)
+def get_expenses_service(month:int|None,year:int|None,category_id:int|None,current_user:UserModel,db:Session):
+    if category_id is not None:
+        category=get_category_by_id(db,category_id,current_user.id)
+        if category is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Category not Found")
+    if (month is None) != (year is None):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Month and year must be provided together")
+    return get_expenses_repo(db,current_user.id,month,year,category_id)
 
 def get_expense_by_id_service(expense_id:int,current_user:UserModel,db:Session):
     expense=get_expense_by_id_repo(db,expense_id,current_user.id)

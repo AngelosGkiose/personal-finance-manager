@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -17,8 +17,8 @@ def create_expense(request: ExpenseCreate,current_user:UserModel=Depends(get_cur
 
 
 @router.get("/",response_model=list[ExpenseResponse],status_code=status.HTTP_200_OK)
-def get_expenses(current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
-    return get_expenses_service(current_user,db)
+def get_expenses(month:int|None=Query(default=None,gt=0,le=12),year:int|None=Query(default=None,gt=0),category_id:int|None=Query(default=None,gt=0),current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
+    return get_expenses_service(month,year,category_id,current_user,db)
 
 @router.get("/{expense_id}",response_model=ExpenseResponse,status_code=status.HTTP_200_OK)
 def get_expense_by_id(expense_id:int,current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
