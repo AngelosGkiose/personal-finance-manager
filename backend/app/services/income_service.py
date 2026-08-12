@@ -6,7 +6,7 @@ from app.models.income_model import IncomeModel, IncomeStatus
 from app.models.user_model import UserModel
 from app.repositories.income_repository import create_income_repo, get_incomes_repo, get_income_by_id_repo, \
     update_income_repo
-from app.schemas.income import IncomeCreate, IncomeReceive
+from app.schemas.income import IncomeCreate, IncomeReceive, IncomeUpdate
 
 
 def create_income_service(request:IncomeCreate,current_user:UserModel,db:Session):
@@ -33,3 +33,15 @@ def update_income_received_service(income_id:int,request:IncomeReceive,current_u
     income.status=IncomeStatus.RECEIVED
     income.received_date=request.received_date
     return update_income_repo(db,income)
+
+
+def update_income_service(income_id:int,request:IncomeUpdate,current_user:UserModel,db:Session):
+    income=get_income_by_id_repo(db,income_id,current_user.id)
+    if income is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Income not found")
+    if income.status==IncomeStatus.RECEIVED:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Received income cannot be modified")
+    income.amount=request.amount
+    income.source=request.source
+    income.expected_date=request.expected_date
+    return update_income_repo(db, income)
