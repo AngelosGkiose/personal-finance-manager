@@ -15,8 +15,13 @@ def create_income_service(request:IncomeCreate,current_user:UserModel,db:Session
     return create_income_repo(db,new_income)
 
 
-def get_incomes_service(current_user:UserModel,db:Session):
-    return get_incomes_repo(db,current_user.id)
+def get_incomes_service(month:int|None,year:int|None,income_status:IncomeStatus|None,current_user:UserModel,db:Session):
+    if (month is None) != (year is None):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Month and year must be provided together"
+        )
+    return get_incomes_repo(month,year,income_status,db,current_user.id)
 
 def get_income_by_id_service(income_id:int,current_user:UserModel,db:Session):
    income=get_income_by_id_repo(db,income_id,current_user.id)
