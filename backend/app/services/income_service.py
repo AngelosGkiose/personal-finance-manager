@@ -2,10 +2,11 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.models.income_model import IncomeModel
+from app.models.income_model import IncomeModel, IncomeStatus
 from app.models.user_model import UserModel
-from app.repositories.income_repository import create_income_repo, get_incomes_repo, get_income_by_id_repo
-from app.schemas.income import IncomeCreate
+from app.repositories.income_repository import create_income_repo, get_incomes_repo, get_income_by_id_repo, \
+    update_income_repo
+from app.schemas.income import IncomeCreate, IncomeReceive
 
 
 def create_income_service(request:IncomeCreate,current_user:UserModel,db:Session):
@@ -22,3 +23,13 @@ def get_income_by_id_service(income_id:int,current_user:UserModel,db:Session):
    if income is None:
        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Income not found")
    return income
+
+def update_income_received_service(income_id:int,request:IncomeReceive,current_user:UserModel,db:Session):
+    income=get_income_by_id_repo(db,income_id,current_user.id)
+    if income is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Income not found")
+    if income.status==IncomeStatus.RECEIVED:
+        return income
+    income.status=IncomeStatus.RECEIVED
+    income.received_date=request.received_date
+    return update_income_repo(db,income)
