@@ -1,4 +1,5 @@
-from datetime import date
+
+from datetime import date,datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
@@ -18,8 +19,8 @@ class IncomeResponse(BaseModel):
     status:IncomeStatus
     expected_date:date
     received_date: date | None
-    created_at:date
-    updated_at:date
+    created_at: datetime
+    updated_at:datetime
 
     model_config = {
         "from_attributes": True
