@@ -7,7 +7,7 @@ from decimal import Decimal
 
 class ExpenseCreate(BaseModel):
     amount:Decimal=Field(gt=0,max_digits=12,decimal_places=2)
-    description:str=Field(min_length=0,max_length=255)
+    description:str=Field(min_length=1,max_length=255)
     expense_date:date
     category_id:int=Field(gt=0)
 
@@ -27,7 +27,7 @@ class ExpenseResponse(BaseModel):
 
 class ExpenseUpdate(BaseModel):
     amount:Decimal=Field(gt=0,max_digits=12,decimal_places=2)
-    description:str=Field(min_length=0,max_length=255)
+    description:str=Field(min_length=1,max_length=255)
     expense_date:date
     category_id:int=Field(gt=0)
 
