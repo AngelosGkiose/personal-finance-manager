@@ -23,3 +23,7 @@ def update_income_repo(db:Session,income:IncomeModel):
     db.commit()
     db.refresh(income)
     return income
+
+def delete_income_repo(db:Session,income:IncomeModel):
+    db.delete(income)
+    db.commit()
