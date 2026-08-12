@@ -19,7 +19,11 @@ class UserModel(Base):
     )
     categories=relationship("CategoryModel",back_populates="user")
     expenses = relationship("ExpenseModel",back_populates="user")
-
+    
+    incomes = relationship(
+        "IncomeModel",
+        back_populates="user"
+    )
 
 
 
