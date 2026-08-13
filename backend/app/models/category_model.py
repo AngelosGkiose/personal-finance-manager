@@ -26,3 +26,4 @@ class CategoryModel(Base):
 
     user=relationship("UserModel",back_populates="categories")
     expenses = relationship("ExpenseModel",back_populates="category")
+    obligations = relationship("ObligationModel", back_populates="category")

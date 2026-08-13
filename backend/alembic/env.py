@@ -13,6 +13,7 @@ from app.models.user_model import UserModel
 from app.models.category_model import CategoryModel
 from app.models.expense_model import ExpenseModel
 from app.models.income_model import IncomeModel
+from app.models.obligation_model import ObligationModel
 
 
 config = context.config

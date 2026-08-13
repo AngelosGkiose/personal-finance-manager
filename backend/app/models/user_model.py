@@ -24,7 +24,7 @@ class UserModel(Base):
         "IncomeModel",
         back_populates="user"
     )
-
+    obligations = relationship("ObligationModel", back_populates="user")
 
 
 
