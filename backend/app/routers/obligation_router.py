@@ -1,0 +1,15 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from starlette import status
+
+from app.dependencies.auth import get_current_user
+from app.dependencies.db import get_db
+from app.models.user_model import UserModel
+from app.schemas.obligations import ObligationResponse, ObligationCreate
+from app.services.obligation_service import create_obligation_service
+
+router=APIRouter(prefix="/obligations",tags=["obligations"])
+
+@router.post("/",response_model=ObligationResponse,status_code=status.HTTP_201_CREATED)
+def create_obligation(request:ObligationCreate,current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
+    return create_obligation_service(request,current_user,db)
