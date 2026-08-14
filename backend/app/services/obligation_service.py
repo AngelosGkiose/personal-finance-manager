@@ -8,7 +8,7 @@ from app.models.user_model import UserModel
 from app.repositories.category_repository import get_category_by_id
 from app.repositories.obligation_repository import create_obligation_repo, get_obligations_repo, \
     get_obligation_by_id_repo, update_obligation_repo, delete_obligation_repo, pay_obligation_repo
-from app.schemas.obligations import ObligationUpdate, ObligationPayment, ObligationCreate
+from app.schemas.obligations import ObligationUpdate, ObligationPayment, ObligationCreate, ObligationFilterStatus
 
 
 def  create_obligation_service(request:ObligationCreate,current_user:UserModel,db:Session):
@@ -18,8 +18,17 @@ def  create_obligation_service(request:ObligationCreate,current_user:UserModel,d
     new_obligation = ObligationModel(title=request.title,amount=request.amount,due_date=request.due_date,category_id=category.id,user_id=current_user.id,)
     return create_obligation_repo(db,new_obligation)
 
-def get_obligations_service(current_user:UserModel,db:Session):
-    return get_obligations_repo(db,current_user.id)
+def get_obligations_service(month:int,year:int,obligation_status:ObligationFilterStatus,category_id:int,current_user:UserModel,db:Session):
+    if (month is None) != (year is None):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Month and year must be provided together"
+        )
+    if category_id is not None:
+        category = get_category_by_id(db, category_id, current_user.id)
+        if category is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Category not found")
+    return get_obligations_repo(db,current_user.id,month,year,obligation_status,category_id)
 
 def get_obligation_by_id_service(obligation_id,current_user:UserModel,db:Session):
     obligation= get_obligation_by_id_repo(db, obligation_id, current_user.id)

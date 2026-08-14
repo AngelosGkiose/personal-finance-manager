@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from starlette import status
 
 from app.dependencies.auth import get_current_user
 from app.dependencies.db import get_db
 from app.models.user_model import UserModel
-from app.schemas.obligations import ObligationResponse, ObligationCreate, ObligationUpdate, ObligationPayment
+from app.schemas.obligations import ObligationResponse, ObligationCreate, ObligationUpdate, ObligationPayment, \
+    ObligationFilterStatus
 from app.services.obligation_service import create_obligation_service, get_obligations_service, \
     get_obligation_by_id_service, update_obligation_service, delete_obligation_service, pay_obligation_service
 
@@ -16,8 +17,10 @@ def create_obligation(request:ObligationCreate,current_user:UserModel=Depends(ge
     return create_obligation_service(request,current_user,db)
 
 @router.get("/",response_model=list[ObligationResponse],status_code=status.HTTP_200_OK)
-def get_obligations(current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
-    return get_obligations_service(current_user,db)
+def get_obligations(month: int | None = Query(default=None, ge=1, le=12),year: int | None = Query(default=None, gt=0),
+                    obligation_status: ObligationFilterStatus | None = Query(default=None, alias="status"),category_id: int | None = Query(default=None, gt=0),
+                    current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
+    return get_obligations_service(month,year,obligation_status,category_id,current_user,db)
 
 
 @router.get("/{obligation_id}",response_model=ObligationResponse,status_code=status.HTTP_200_OK)

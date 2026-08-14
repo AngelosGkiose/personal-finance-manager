@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from enum import Enum
 
 from pydantic import BaseModel, Field
 
@@ -23,6 +24,10 @@ class ObligationUpdate(BaseModel):
 class ObligationPayment(BaseModel):
     paid_date: date
 
+class ObligationFilterStatus(str, Enum):
+    PENDING = "pending"
+    PAID = "paid"
+    OVERDUE = "overdue"
 
 class ObligationResponse(BaseModel):
     id:int
@@ -39,3 +44,4 @@ class ObligationResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
