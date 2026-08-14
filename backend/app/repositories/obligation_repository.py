@@ -19,3 +19,7 @@ def update_obligation_repo(db:Session,new_obligation:ObligationModel):
     db.commit()
     db.refresh(new_obligation)
     return new_obligation
+
+def delete_obligation_repo(db:Session,obligation:ObligationModel):
+    db.delete(obligation)
+    db.commit()

@@ -28,3 +28,7 @@ def get_obligation_by_id(obligation_id:int,current_user:UserModel=Depends(get_cu
 @router.patch("/{obligation_id}",response_model=ObligationResponse,status_code=status.HTTP_200_OK)
 def update_obligation(obligation_id:int,request:ObligationUpdate,current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
     return update_obligation_service(obligation_id,request,current_user,db)
+
+@router.delete("/{obligation_id}",status_code=status.HTTP_204_NO_CONTENT)
+def delete_obligation(obligation_id:int,current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
+    return delete_obligation_service(obligation_id,current_user,db)

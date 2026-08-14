@@ -6,7 +6,7 @@ from app.models.obligation_model import ObligationModel, ObligationStatus
 from app.models.user_model import UserModel
 from app.repositories.category_repository import get_category_by_id
 from app.repositories.obligation_repository import create_obligation_repo, get_obligations_repo, \
-    get_obligation_by_id_repo, update_obligation_repo
+    get_obligation_by_id_repo, update_obligation_repo, delete_obligation_repo
 from app.schemas.obligations import ObligationUpdate
 
 
@@ -45,3 +45,12 @@ def update_obligation_service(obligation_id:int,request:ObligationUpdate,current
         setattr(obligation, field, value)
 
     return update_obligation_repo(db, obligation)
+
+
+def delete_obligation_service(obligation_id,current_user:UserModel,db:Session):
+    obligation= get_obligation_by_id_repo(db, obligation_id, current_user.id)
+    if obligation is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Obligation not found")
+    if obligation.status==ObligationStatus.PAID:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Obligation cannot be deleted")
+    return delete_obligation_repo(db, obligation)
