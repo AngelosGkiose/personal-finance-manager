@@ -14,10 +14,10 @@ class ObligationCreate(BaseModel):
 
 
 class ObligationUpdate(BaseModel):
-    title:str=Field(min_length=1,max_length=100)
-    amount: Decimal = Field(gt=0, max_digits=12, decimal_places=2)
-    due_date:date
-    category_id:int=Field(gt=0)
+    title: str | None = Field(default=None, min_length=1, max_length=255)
+    amount: Decimal | None = Field(default=None, gt=0, max_digits=12, decimal_places=2)
+    due_date: date | None = None
+    category_id: int | None = Field(default=None, gt=0)
 
 
 class ObligationPayment(BaseModel):
