@@ -28,3 +28,16 @@ class MonthlyComparisonResponse(BaseModel):
     received_income: ComparisonMetric
     expenses: ComparisonMetric
     actual_balance: ComparisonMetric
+
+
+class CategoryExpenseResponse(BaseModel):
+    category_id: int
+    category_name: str
+    amount: Decimal
+    percentage: Decimal
+
+class ExpensesByCategoryResponse(BaseModel):
+    month: int
+    year: int
+    total_expenses: Decimal
+    categories: list[CategoryExpenseResponse]

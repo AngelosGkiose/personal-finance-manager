@@ -10,8 +10,9 @@ from starlette import status
 from app.models.user_model import UserModel
 from app.repositories.dashboard_repository import get_monthly_dashboard_totals, get_expenses_history, \
     get_pending_obligations_history, get_expected_income_history, get_received_income_history, \
-    get_monthly_comparison_totals
-from app.schemas.dashboard import MonthlyOverviewResponse, MonthlyComparisonResponse, ComparisonMetric
+    get_monthly_comparison_totals, get_expenses_by_category_repo
+from app.schemas.dashboard import MonthlyOverviewResponse, MonthlyComparisonResponse, ComparisonMetric, \
+    CategoryExpenseResponse, ExpensesByCategoryResponse
 
 
 def shift_month(value: date, months: int) -> date:
@@ -238,4 +239,51 @@ def get_monthly_comparison_service(
         received_income=received_income_comparison,
         expenses=expenses_comparison,
         actual_balance=actual_balance_comparison
+    )
+
+
+
+
+def get_expenses_by_category_service(month: int | None, year: int | None,current_user: UserModel,db: Session) :
+    if (month is None) != (year is None):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Month and year must be provided together")
+    if month is None and year is None:
+        today = datetime.now(ZoneInfo("Europe/Athens")).date()
+        resolved_month = today.month
+        resolved_year = today.year
+    else:
+        assert month is not None
+        assert year is not None
+        resolved_month = month
+        resolved_year = year
+    rows = get_expenses_by_category_repo(db,current_user.id,resolved_month,resolved_year)
+    total_expenses = sum(
+        (row.total for row in rows),
+        Decimal("0.00")
+    )
+
+    categories = []
+
+    for row in rows:
+        if total_expenses == Decimal("0.00"):
+            percentage = Decimal("0.00")
+        else:
+            percentage = (
+                (row.total / total_expenses) * Decimal("100")
+            ).quantize(Decimal("0.01"))
+
+        categories.append(
+            CategoryExpenseResponse(
+                category_id=row.category_id,
+                category_name=row.category_name,
+                amount=row.total,
+                percentage=percentage
+            )
+        )
+
+    return ExpensesByCategoryResponse(
+        month=resolved_month,
+        year=resolved_year,
+        total_expenses=total_expenses,
+        categories=categories
     )
