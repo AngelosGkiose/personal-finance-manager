@@ -9,9 +9,9 @@ from starlette import status
 
 from app.models.user_model import UserModel
 from app.repositories.dashboard_repository import get_monthly_dashboard_totals, get_expenses_history, \
-    get_pending_obligations_history, get_expected_income_history, get_received_income_history
-from app.schemas.dashboard import MonthlyOverviewResponse
-
+    get_pending_obligations_history, get_expected_income_history, get_received_income_history, \
+    get_monthly_comparison_totals
+from app.schemas.dashboard import MonthlyOverviewResponse, MonthlyComparisonResponse, ComparisonMetric
 
 
 def shift_month(value: date, months: int) -> date:
@@ -35,6 +35,26 @@ def rows_to_monthly_dict(rows):
         result[key] = row.total or Decimal("0.00")
 
     return result
+
+def build_comparison_metric(
+    current: Decimal,
+    previous: Decimal
+) -> ComparisonMetric:
+    difference = current - previous
+
+    if previous == Decimal("0.00"):
+        percentage_change = None
+    else:
+        percentage_change = (
+            (difference / previous) * Decimal("100")
+        ).quantize(Decimal("0.01"))
+
+    return ComparisonMetric(
+        current=current,
+        previous=previous,
+        difference=difference,
+        percentage_change=percentage_change
+    )
 
 def get_monthly_dashboard_service(
     month: int | None,
@@ -138,3 +158,84 @@ def get_monthly_history_service(months:int,current_user: UserModel,db: Session):
             )
         )
     return history
+
+def get_monthly_comparison_service(
+    month: int | None,
+    year: int | None,
+    current_user: UserModel,
+    db: Session
+):
+    if (month is None) != (year is None):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Month and year must be provided together"
+        )
+
+    if month is None and year is None:
+        today = datetime.now(ZoneInfo("Europe/Athens")).date()
+        resolved_month = today.month
+        resolved_year = today.year
+    else:
+        assert month is not None
+        assert year is not None
+
+        resolved_month = month
+        resolved_year = year
+
+    current_month_start = date(
+        resolved_year,
+        resolved_month,
+        1
+    )
+
+    previous_month_date = shift_month(
+        current_month_start,
+        -1
+    )
+
+    totals = get_monthly_comparison_totals(
+        db,
+        current_user.id,
+        resolved_month,
+        resolved_year,
+        previous_month_date.month,
+        previous_month_date.year
+    )
+
+    current_totals = totals["current"]
+    previous_totals = totals["previous"]
+
+    current_actual_balance = (
+        current_totals["received_income"]
+        - current_totals["expenses"]
+    )
+
+    previous_actual_balance = (
+        previous_totals["received_income"]
+        - previous_totals["expenses"]
+    )
+
+    received_income_comparison = build_comparison_metric(
+        current_totals["received_income"],
+        previous_totals["received_income"]
+    )
+
+    expenses_comparison = build_comparison_metric(
+        current_totals["expenses"],
+        previous_totals["expenses"]
+    )
+
+    actual_balance_comparison = build_comparison_metric(
+        current_actual_balance,
+        previous_actual_balance
+    )
+
+    return MonthlyComparisonResponse(
+        month=resolved_month,
+        year=resolved_year,
+        previous_month=previous_month_date.month,
+        previous_year=previous_month_date.year,
+        received_income=received_income_comparison,
+        expenses=expenses_comparison,
+        actual_balance=actual_balance_comparison
+    )

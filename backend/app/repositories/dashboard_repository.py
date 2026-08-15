@@ -107,3 +107,31 @@ def get_pending_obligations_history(
         year,
         month
     ).all()
+
+
+def get_monthly_comparison_totals(
+    db: Session,
+    current_user_id: int,
+    current_month: int,
+    current_year: int,
+    previous_month: int,
+    previous_year: int
+):
+    current_totals = get_monthly_dashboard_totals(
+        db,
+        current_user_id,
+        current_month,
+        current_year
+    )
+
+    previous_totals = get_monthly_dashboard_totals(
+        db,
+        current_user_id,
+        previous_month,
+        previous_year
+    )
+
+    return {
+        "current": current_totals,
+        "previous": previous_totals
+    }
