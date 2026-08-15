@@ -10,9 +10,9 @@ from starlette import status
 from app.models.user_model import UserModel
 from app.repositories.dashboard_repository import get_monthly_dashboard_totals, get_expenses_history, \
     get_pending_obligations_history, get_expected_income_history, get_received_income_history, \
-    get_monthly_comparison_totals, get_expenses_by_category_repo
+    get_monthly_comparison_totals, get_expenses_by_category_repo, get_expenses_by_category_comparison_repo
 from app.schemas.dashboard import MonthlyOverviewResponse, MonthlyComparisonResponse, ComparisonMetric, \
-    CategoryExpenseResponse, ExpensesByCategoryResponse
+    CategoryExpenseResponse, ExpensesByCategoryResponse, CategoryExpenseComparison, ExpensesByCategoryComparisonResponse
 
 
 def shift_month(value: date, months: int) -> date:
@@ -285,5 +285,125 @@ def get_expenses_by_category_service(month: int | None, year: int | None,current
         month=resolved_month,
         year=resolved_year,
         total_expenses=total_expenses,
+        categories=categories
+    )
+
+def get_expenses_by_category_comparison_service(
+    month: int | None,
+    year: int | None,
+    current_user: UserModel,
+    db: Session
+):
+    if (month is None) != (year is None):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Month and year must be provided together"
+        )
+
+    if month is None and year is None:
+        today = datetime.now(ZoneInfo("Europe/Athens")).date()
+
+        resolved_month = today.month
+        resolved_year = today.year
+
+    else:
+        assert month is not None
+        assert year is not None
+
+        resolved_month = month
+        resolved_year = year
+
+    current_month_start = date(
+        resolved_year,
+        resolved_month,
+        1
+    )
+
+    previous_month_date = shift_month(
+        current_month_start,
+        -1
+    )
+
+    rows = get_expenses_by_category_comparison_repo(
+        db,
+        current_user.id,
+        resolved_month,
+        resolved_year,
+        previous_month_date.month,
+        previous_month_date.year
+    )
+
+    current_rows = rows["current"]
+    previous_rows = rows["previous"]
+
+    current_categories = {
+        row.category_id: row
+        for row in current_rows
+    }
+
+    previous_categories = {
+        row.category_id: row
+        for row in previous_rows
+    }
+
+    category_ids = (
+        set(current_categories.keys())
+        | set(previous_categories.keys())
+    )
+
+    categories = []
+
+    for category_id in category_ids:
+        current_row = current_categories.get(category_id)
+        previous_row = previous_categories.get(category_id)
+
+        current_amount = (
+            current_row.total
+            if current_row is not None
+            else Decimal("0.00")
+        )
+
+        previous_amount = (
+            previous_row.total
+            if previous_row is not None
+            else Decimal("0.00")
+        )
+
+        if current_row is not None:
+            category_name = current_row.category_name
+        else:
+            category_name = previous_row.category_name
+
+        difference = current_amount - previous_amount
+
+        if previous_amount == Decimal("0.00"):
+            percentage_change = None
+        else:
+            percentage_change = (
+                (difference / previous_amount)
+                * Decimal("100")
+            ).quantize(Decimal("0.01"))
+
+        categories.append(
+            CategoryExpenseComparison(
+                category_id=category_id,
+                category_name=category_name,
+                current=current_amount,
+                previous=previous_amount,
+                difference=difference,
+                percentage_change=percentage_change
+            )
+        )
+
+    categories.sort(
+        key=lambda category: category.current,
+        reverse=True
+    )
+
+    return ExpensesByCategoryComparisonResponse(
+        month=resolved_month,
+        year=resolved_year,
+        previous_month=previous_month_date.month,
+        previous_year=previous_month_date.year,
         categories=categories
     )

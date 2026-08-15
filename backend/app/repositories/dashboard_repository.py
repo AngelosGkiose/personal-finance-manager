@@ -162,3 +162,29 @@ def get_expenses_by_category_repo(db:Session, current_user_id:int, month:int, ye
         total.desc()
     ).all()
 
+def get_expenses_by_category_comparison_repo(
+    db: Session,
+    current_user_id: int,
+    current_month: int,
+    current_year: int,
+    previous_month: int,
+    previous_year: int
+):
+    current_rows = get_expenses_by_category_repo(
+        db,
+        current_user_id,
+        current_month,
+        current_year
+    )
+
+    previous_rows = get_expenses_by_category_repo(
+        db,
+        current_user_id,
+        previous_month,
+        previous_year
+    )
+
+    return {
+        "current": current_rows,
+        "previous": previous_rows
+    }
