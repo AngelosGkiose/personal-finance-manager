@@ -12,7 +12,8 @@ from app.repositories.dashboard_repository import get_monthly_dashboard_totals, 
     get_pending_obligations_history, get_expected_income_history, get_received_income_history, \
     get_monthly_comparison_totals, get_expenses_by_category_repo, get_expenses_by_category_comparison_repo
 from app.schemas.dashboard import MonthlyOverviewResponse, MonthlyComparisonResponse, ComparisonMetric, \
-    CategoryExpenseResponse, ExpensesByCategoryResponse, CategoryExpenseComparison, ExpensesByCategoryComparisonResponse
+    CategoryExpenseResponse, ExpensesByCategoryResponse, CategoryExpenseComparison, \
+    ExpensesByCategoryComparisonResponse, TopExpenseCategoryResponse
 
 
 def shift_month(value: date, months: int) -> date:
@@ -406,4 +407,66 @@ def get_expenses_by_category_comparison_service(
         previous_month=previous_month_date.month,
         previous_year=previous_month_date.year,
         categories=categories
+    )
+
+def get_top_expense_category_service(
+    month: int | None,
+    year: int | None,
+    current_user: UserModel,
+    db: Session
+):
+    if (month is None) != (year is None):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Month and year must be provided together"
+        )
+
+    if month is None and year is None:
+        today = datetime.now(ZoneInfo("Europe/Athens")).date()
+
+        resolved_month = today.month
+        resolved_year = today.year
+    else:
+        assert month is not None
+        assert year is not None
+
+        resolved_month = month
+        resolved_year = year
+
+    rows = get_expenses_by_category_repo(
+        db,
+        current_user.id,
+        resolved_month,
+        resolved_year
+    )
+
+    if not rows:
+        return TopExpenseCategoryResponse(
+            month=resolved_month,
+            year=resolved_year,
+            category_id=None,
+            category_name=None,
+            amount=Decimal("0.00"),
+            percentage=Decimal("0.00")
+        )
+
+    total_expenses = sum(
+        (row.total for row in rows),
+        Decimal("0.00")
+    )
+
+    top_category = rows[0]
+
+    percentage = (
+        (top_category.total / total_expenses)
+        * Decimal("100")
+    ).quantize(Decimal("0.01"))
+
+    return TopExpenseCategoryResponse(
+        month=resolved_month,
+        year=resolved_year,
+        category_id=top_category.category_id,
+        category_name=top_category.category_name,
+        amount=top_category.total,
+        percentage=percentage
     )

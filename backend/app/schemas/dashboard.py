@@ -58,3 +58,12 @@ class ExpensesByCategoryComparisonResponse(BaseModel):
     previous_month: int
     previous_year: int
     categories: list[CategoryExpenseComparison]
+
+
+class TopExpenseCategoryResponse(BaseModel):
+    month: int
+    year: int
+    category_id: int | None
+    category_name: str | None
+    amount: Decimal
+    percentage: Decimal
