@@ -82,3 +82,18 @@ class UpcomingObligationsResponse(BaseModel):
     days: int
     total_amount: Decimal
     obligations: list[UpcomingObligationResponse]
+
+
+class OverdueObligationResponse(BaseModel):
+    id: int
+    title: str
+    amount: Decimal
+    due_date: date
+    category_id: int
+    category_name: str
+    days_overdue: int
+
+class OverdueObligationsResponse(BaseModel):
+    count: int
+    total_amount: Decimal
+    obligations: list[OverdueObligationResponse]

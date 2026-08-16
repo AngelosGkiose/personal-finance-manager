@@ -215,3 +215,28 @@ def get_upcoming_obligations_repo(
     ).order_by(
         ObligationModel.due_date.asc()
     ).all()
+
+def get_overdue_obligations_repo(
+    db: Session,
+    current_user_id: int,
+    today: date
+):
+    return db.query(
+        ObligationModel.id.label("id"),
+        ObligationModel.title.label("title"),
+        ObligationModel.amount.label("amount"),
+        ObligationModel.due_date.label("due_date"),
+        CategoryModel.id.label("category_id"),
+        CategoryModel.name.label("category_name")
+    ).select_from(
+        ObligationModel
+    ).join(
+        CategoryModel,
+        ObligationModel.category_id == CategoryModel.id
+    ).filter(
+        ObligationModel.user_id == current_user_id,
+        ObligationModel.status == ObligationStatus.PENDING,
+        ObligationModel.due_date < today
+    ).order_by(
+        ObligationModel.due_date.asc()
+    ).all()

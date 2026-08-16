@@ -11,11 +11,11 @@ from app.models.user_model import UserModel
 from app.repositories.dashboard_repository import get_monthly_dashboard_totals, get_expenses_history, \
     get_pending_obligations_history, get_expected_income_history, get_received_income_history, \
     get_monthly_comparison_totals, get_expenses_by_category_repo, get_expenses_by_category_comparison_repo, \
-    get_upcoming_obligations_repo
+    get_upcoming_obligations_repo, get_overdue_obligations_repo
 from app.schemas.dashboard import MonthlyOverviewResponse, MonthlyComparisonResponse, ComparisonMetric, \
     CategoryExpenseResponse, ExpensesByCategoryResponse, CategoryExpenseComparison, \
     ExpensesByCategoryComparisonResponse, TopExpenseCategoryResponse, UpcomingObligationsResponse, \
-    UpcomingObligationResponse
+    UpcomingObligationResponse, OverdueObligationsResponse, OverdueObligationResponse
 
 
 def shift_month(value: date, months: int) -> date:
@@ -514,6 +514,51 @@ def get_upcoming_obligations_service(
 
     return UpcomingObligationsResponse(
         days=days,
+        total_amount=total_amount,
+        obligations=obligations
+    )
+
+
+def get_overdue_obligations_service(
+    current_user: UserModel,
+    db: Session
+):
+    today = datetime.now(
+        ZoneInfo("Europe/Athens")
+    ).date()
+
+    rows = get_overdue_obligations_repo(
+        db,
+        current_user.id,
+        today
+    )
+
+    total_amount = sum(
+        (row.amount for row in rows),
+        Decimal("0.00")
+    )
+
+    obligations = []
+
+    for row in rows:
+        days_overdue = (
+            today - row.due_date
+        ).days
+
+        obligations.append(
+            OverdueObligationResponse(
+                id=row.id,
+                title=row.title,
+                amount=row.amount,
+                due_date=row.due_date,
+                category_id=row.category_id,
+                category_name=row.category_name,
+                days_overdue=days_overdue
+            )
+        )
+
+    return OverdueObligationsResponse(
+        count=len(obligations),
         total_amount=total_amount,
         obligations=obligations
     )
