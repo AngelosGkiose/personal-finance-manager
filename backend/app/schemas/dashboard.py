@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 from pydantic import BaseModel
@@ -67,3 +68,17 @@ class TopExpenseCategoryResponse(BaseModel):
     category_name: str | None
     amount: Decimal
     percentage: Decimal
+
+class UpcomingObligationResponse(BaseModel):
+    id: int
+    title: str
+    amount: Decimal
+    due_date: date
+    category_id: int
+    category_name: str
+    days_until_due: int
+
+class UpcomingObligationsResponse(BaseModel):
+    days: int
+    total_amount: Decimal
+    obligations: list[UpcomingObligationResponse]
