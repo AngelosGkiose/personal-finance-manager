@@ -127,3 +127,37 @@ def test_category(client, auth_headers):
     assert response.status_code == 201
 
     return response.json()
+
+@pytest.fixture
+def second_user_data():
+    return {
+        "username": "seconduser",
+        "email": "second@example.com",
+        "password": "SecondPassword123"
+    }
+
+
+@pytest.fixture
+def second_user_auth_headers(client, second_user_data):
+    register_response = client.post(
+        "/auth/register",
+        json=second_user_data
+    )
+
+    assert register_response.status_code == 201
+
+    login_response = client.post(
+        "/auth/login",
+        json={
+            "email": second_user_data["email"],
+            "password": second_user_data["password"]
+        }
+    )
+
+    assert login_response.status_code == 200
+
+    token = login_response.json()["access_token"]
+
+    return {
+        "Authorization": f"Bearer {token}"
+    }

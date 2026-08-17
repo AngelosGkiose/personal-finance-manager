@@ -19,7 +19,7 @@ def create_income(request:IncomeCreate,current_user:UserModel=Depends(get_curren
     return create_income_service(request,current_user,db)
 
 @router.get("/",response_model=list[IncomeResponse],status_code=status.HTTP_200_OK)
-def get_incomes(month:int|None=Query(deafult=None,gt=0,le=12),year:int|None=Query(default=None,gt=0),
+def get_incomes(month:int|None=Query(default=None,gt=0,le=12),year:int|None=Query(default=None,gt=0),
                 income_status:IncomeStatus|None=Query(default=None,alias="status"),
                 current_user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
     return get_incomes_service(month,year,income_status,current_user,db)
