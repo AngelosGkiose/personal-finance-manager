@@ -23,7 +23,7 @@ class ObligationModel(Base):
     title= Column(String(255),nullable=False)
     amount = Column(Numeric(12, 2),nullable=False)
     due_date = Column(Date,nullable=False)
-    status = Column(SQLEnum(ObligationStatus),nullable=False)
+    status = Column(SQLEnum(ObligationStatus),nullable=False,default=ObligationStatus.PENDING)
     paid_date= Column(Date,nullable=True,default=None)
     category_id = Column(Integer,ForeignKey('categories.id'),nullable=False)
     user_id = Column(Integer,ForeignKey('users.id'),nullable=False)
