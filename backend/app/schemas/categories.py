@@ -14,6 +14,7 @@ class CategoryResponse(BaseModel):
     id:int
     name:str
     created_at:datetime
+    is_system: bool
     
     model_config={
         "from_attributes":True

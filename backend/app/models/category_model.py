@@ -1,6 +1,6 @@
 from datetime import timezone, datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UniqueConstraint, Boolean
 from sqlalchemy.orm import relationship
 
 from app.database.database import Base
@@ -21,6 +21,11 @@ class CategoryModel(Base):
         DateTime(timezone=True),
         nullable=False,
         default=lambda: datetime.now(timezone.utc)
+    )
+    is_system = Column(
+        Boolean,
+        nullable=False,
+        default=False
     )
     user_id = Column(Integer,ForeignKey('users.id'),nullable=False)
 
