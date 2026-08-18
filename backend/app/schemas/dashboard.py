@@ -11,7 +11,7 @@ class MonthlyOverviewResponse(BaseModel):
     expected_income: Decimal
     expenses: Decimal
     pending_obligations: Decimal
-    actual_balance: Decimal
+    monthly_balance: Decimal
     projected_balance: Decimal
 
 class ComparisonMetric(BaseModel):
@@ -28,7 +28,7 @@ class MonthlyComparisonResponse(BaseModel):
 
     received_income: ComparisonMetric
     expenses: ComparisonMetric
-    actual_balance: ComparisonMetric
+    monthly_balance: ComparisonMetric
 
 
 class CategoryExpenseResponse(BaseModel):

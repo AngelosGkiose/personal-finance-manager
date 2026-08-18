@@ -128,7 +128,7 @@ def test_monthly_dashboard_only_uses_current_users_data(
     assert Decimal(dashboard_a["expenses"]) == Decimal("100.00")
     assert Decimal(dashboard_a["pending_obligations"]) == Decimal("50.00")
 
-    assert Decimal(dashboard_a["actual_balance"]) == Decimal("-100.00")
+    assert Decimal(dashboard_a["monthly_balance"]) == Decimal("-100.00")
     assert Decimal(dashboard_a["projected_balance"]) == Decimal("350.00")
 
 
@@ -150,5 +150,5 @@ def test_monthly_dashboard_only_uses_current_users_data(
     assert Decimal(dashboard_b["expenses"]) == Decimal("20.00")
     assert Decimal(dashboard_b["pending_obligations"]) == Decimal("30.00")
 
-    assert Decimal(dashboard_b["actual_balance"]) == Decimal("-20.00")
+    assert Decimal(dashboard_b["monthly_balance"]) == Decimal("-20.00")
     assert Decimal(dashboard_b["projected_balance"]) == Decimal("30.00")

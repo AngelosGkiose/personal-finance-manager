@@ -14,6 +14,7 @@ from app.models.category_model import CategoryModel
 from app.models.expense_model import ExpenseModel
 from app.models.income_model import IncomeModel
 from app.models.obligation_model import ObligationModel
+from app.models.bank_transaction_model import BankTransactionModel
 
 
 config = context.config

@@ -80,7 +80,7 @@ def get_monthly_dashboard_service(
     expected_income=totals['expected_income']
     expenses= totals['expenses']
     pending_obligations=totals['pending_obligations']
-    actual_balance=received_income-expenses
+    monthly_balance=received_income-expenses
     projected_balance = (
             received_income
             + expected_income
@@ -94,7 +94,7 @@ def get_monthly_dashboard_service(
         expected_income=expected_income,
         expenses=expenses,
         pending_obligations=pending_obligations,
-        actual_balance=actual_balance,
+        monthly_balance=monthly_balance,
         projected_balance=projected_balance
     )
 
@@ -139,7 +139,7 @@ def get_monthly_history_service(months:int,current_user: UserModel,db: Session):
             key,
             Decimal("0.00")
         )
-        actual_balance = (
+        monthly_balance = (
             month_received_income
             - month_expenses
         )
@@ -157,7 +157,7 @@ def get_monthly_history_service(months:int,current_user: UserModel,db: Session):
                 expected_income=month_expected_income,
                 expenses=month_expenses,
                 pending_obligations=month_pending_obligations,
-                actual_balance=actual_balance,
+                monthly_balance=monthly_balance,
                 projected_balance=projected_balance
             )
         )
@@ -241,7 +241,7 @@ def get_monthly_comparison_service(
         previous_year=previous_month_date.year,
         received_income=received_income_comparison,
         expenses=expenses_comparison,
-        actual_balance=actual_balance_comparison
+        monthly_balance=actual_balance_comparison
     )
 
 
