@@ -9,7 +9,7 @@ def test_expenses_by_category_calculates_totals_and_percentages(
     second_category_response = client.post(
         "/categories/",
         json={
-            "name": "Fuel"
+            "name": "Dining"
         },
         headers=auth_headers
     )
@@ -48,7 +48,7 @@ def test_expenses_by_category_calculates_totals_and_percentages(
         "/expenses/",
         json={
             "amount": 50,
-            "description": "Shell",
+            "description": "Restaurant",
             "expense_date": "2026-08-17",
             "category_id": second_category["id"]
         },
@@ -68,7 +68,10 @@ def test_expenses_by_category_calculates_totals_and_percentages(
 
     assert data["month"] == 8
     assert data["year"] == 2026
-    assert Decimal(data["total_expenses"]) == Decimal("200.00")
+
+    assert Decimal(
+        data["total_expenses"]
+    ) == Decimal("200.00")
 
     categories = {
         category["category_name"]: category
@@ -77,13 +80,23 @@ def test_expenses_by_category_calculates_totals_and_percentages(
 
     test_category_data = categories["Test Category"]
 
-    assert Decimal(test_category_data["amount"]) == Decimal("150.00")
-    assert Decimal(test_category_data["percentage"]) == Decimal("75.00")
+    assert Decimal(
+        test_category_data["amount"]
+    ) == Decimal("150.00")
 
-    fuel_data = categories["Fuel"]
+    assert Decimal(
+        test_category_data["percentage"]
+    ) == Decimal("75.00")
 
-    assert Decimal(fuel_data["amount"]) == Decimal("50.00")
-    assert Decimal(fuel_data["percentage"]) == Decimal("25.00")
+    dining_data = categories["Dining"]
+
+    assert Decimal(
+        dining_data["amount"]
+    ) == Decimal("50.00")
+
+    assert Decimal(
+        dining_data["percentage"]
+    ) == Decimal("25.00")
 
 
 def test_expenses_by_category_only_uses_current_users_expenses(
@@ -139,10 +152,20 @@ def test_expenses_by_category_only_uses_current_users_expenses(
 
     data = response.json()
 
-    assert Decimal(data["total_expenses"]) == Decimal("100.00")
+    assert Decimal(
+        data["total_expenses"]
+    ) == Decimal("100.00")
 
     assert len(data["categories"]) == 1
 
-    assert data["categories"][0]["category_name"] == "Test Category"
-    assert Decimal(data["categories"][0]["amount"]) == Decimal("100.00")
-    assert Decimal(data["categories"][0]["percentage"]) == Decimal("100.00")
+    category = data["categories"][0]
+
+    assert category["category_name"] == "Test Category"
+
+    assert Decimal(
+        category["amount"]
+    ) == Decimal("100.00")
+
+    assert Decimal(
+        category["percentage"]
+    ) == Decimal("100.00")

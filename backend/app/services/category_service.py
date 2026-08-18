@@ -8,6 +8,14 @@ from app.repositories.category_repository import get_category_by_name, add_categ
     update_category_repo, get_category_by_id, delete_category_repo
 from app.schemas.categories import CategoryCreate, CategoryUpdate
 
+DEFAULT_CATEGORIES = [
+    ("Other Expenses", True),
+    ("Supermarket", False),
+    ("Fuel", False),
+    ("Electricity", False),
+    ("Water", False),
+    ("Telecom", False),
+]
 
 def create_category_service(data:CategoryCreate,current_user:UserModel,db:Session):
     existing_category=get_category_by_name(data.name,current_user.id,db)
@@ -36,3 +44,22 @@ def delete_category_service(category_id:int,current_user:UserModel,db:Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Category not found")
     delete_category_repo(db,category)
 
+def create_default_categories_for_user(
+    user_id: int,
+    db: Session
+):
+    categories = []
+
+    for name, is_system in DEFAULT_CATEGORIES:
+        category = CategoryModel(
+            name=name,
+            is_system=is_system,
+            user_id=user_id
+        )
+
+        db.add(category)
+        categories.append(category)
+
+    db.flush()
+
+    return categories
