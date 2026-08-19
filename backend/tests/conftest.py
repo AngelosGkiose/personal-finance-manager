@@ -16,6 +16,7 @@ from app.models.income_model import IncomeModel
 from app.models.obligation_model import ObligationModel
 from app.models.bank_transaction_model import BankTransactionModel
 from app.models.categorization_rule_model import CategorizationRuleModel
+from app.models.recurring_income_rule_model import RecurringIncomeRuleModel
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 

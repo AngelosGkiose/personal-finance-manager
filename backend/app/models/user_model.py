@@ -34,6 +34,11 @@ class UserModel(Base):
         "CategorizationRuleModel",
         back_populates="user"
     )
+    recurring_income_rules = relationship(
+        "RecurringIncomeRuleModel",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
 
 

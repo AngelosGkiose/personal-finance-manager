@@ -26,10 +26,22 @@ class IncomeModel(Base):
     expected_date = Column(Date,nullable=False)
     received_date = Column(Date,nullable=True)
     user_id = Column(Integer,ForeignKey('users.id'),nullable=False)
+    recurring_income_rule_id = Column(
+        Integer,
+        ForeignKey(
+            "recurring_income_rules.id",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
     created_at= Column(DateTime(timezone=True),nullable=False,default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True),nullable=False,default=lambda: datetime.now(timezone.utc),onupdate=lambda: datetime.now(timezone.utc))
 
     user = relationship(
         "UserModel",
+        back_populates="incomes"
+    )
+    recurring_income_rule = relationship(
+        "RecurringIncomeRuleModel",
         back_populates="incomes"
     )
