@@ -29,6 +29,7 @@ class BankTransactionImport(BaseModel):
     )
 
     transaction_date: date
+    value_date: date | None = None
 
     currency: str = Field(
         default="EUR",

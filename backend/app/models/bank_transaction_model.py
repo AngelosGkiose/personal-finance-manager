@@ -59,6 +59,12 @@ class BankTransactionModel(Base):
         nullable=False
     )
 
+    value_date = Column(
+        Date,
+        nullable=True
+    )
+
+
     currency = Column(
         String(3),
         nullable=False,

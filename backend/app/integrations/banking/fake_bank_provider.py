@@ -16,6 +16,7 @@ class FakeBankProvider:
                 direction=BankTransactionDirection.OUTGOING,
                 description="SHELL KIFISIAS",
                 transaction_date=date(2026, 8, 18),
+                value_date=date(2026, 8, 17),
                 currency="EUR"
             ),
 
@@ -26,6 +27,7 @@ class FakeBankProvider:
                 direction=BankTransactionDirection.INCOMING,
                 description="SALARY AUGUST",
                 transaction_date=date(2026, 8, 18),
+                value_date=date(2026, 8, 17),
                 currency="EUR"
             ),
 
@@ -36,6 +38,7 @@ class FakeBankProvider:
                 direction=BankTransactionDirection.OUTGOING,
                 description="SKLAVENITIS",
                 transaction_date=date(2026, 8, 18),
+                value_date=date(2026, 8, 17),
                 currency="EUR"
             )
         ]

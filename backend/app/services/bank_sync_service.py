@@ -42,6 +42,7 @@ def sync_bank_transactions_service(
                 direction=transaction.direction,
                 description=transaction.description,
                 transaction_date=transaction.transaction_date,
+                value_date=transaction.value_date,
                 currency=transaction.currency,
                 user_id=current_user.id
             )
