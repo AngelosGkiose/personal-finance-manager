@@ -49,3 +49,20 @@ def update_income_repo(db:Session,income:IncomeModel):
 def delete_income_repo(db:Session,income:IncomeModel):
     db.delete(income)
     db.commit()
+
+def get_income_by_recurring_rule_and_expected_date(
+    db: Session,
+    current_user_id: int,
+    recurring_income_rule_id: int,
+    expected_date
+):
+    return (
+        db.query(IncomeModel)
+        .filter(
+            IncomeModel.user_id == current_user_id,
+            IncomeModel.recurring_income_rule_id
+            == recurring_income_rule_id,
+            IncomeModel.expected_date == expected_date
+        )
+        .first()
+    )

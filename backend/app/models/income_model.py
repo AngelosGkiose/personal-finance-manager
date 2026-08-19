@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from enum import Enum
 
-from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import Enum as SQLEnum, UniqueConstraint
 from sqlalchemy import Column, Integer, Numeric, String, Date, ForeignKey, DateTime, CheckConstraint
 from sqlalchemy.orm import relationship
 
@@ -18,6 +18,11 @@ class IncomeModel(Base):
             "amount > 0",
             name="ck_incomes_amount_positive"
         ),
+        UniqueConstraint(
+            "recurring_income_rule_id",
+            "expected_date",
+            name="uq_income_recurring_rule_expected_date"
+        )
     )
     id = Column(Integer, primary_key=True,index=True)
     amount = Column(Numeric(12, 2),nullable=False)
