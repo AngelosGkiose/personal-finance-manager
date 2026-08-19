@@ -90,3 +90,9 @@ class BankTransactionModel(Base):
     user = relationship(
         "UserModel",
         back_populates="bank_transactions")
+
+    expense = relationship(
+        "ExpenseModel",
+        back_populates="bank_transaction",
+        uselist=False
+    )

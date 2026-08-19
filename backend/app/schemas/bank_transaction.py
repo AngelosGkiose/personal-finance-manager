@@ -39,3 +39,7 @@ class BankSyncResult(BaseModel):
     received: int
     created: int
     skipped: int
+
+class BankTransactionProcessingResult(BaseModel):
+    found: int
+    processed: int

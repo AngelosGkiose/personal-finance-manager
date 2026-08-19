@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models.bank_transaction_model import BankTransactionModel
+from app.models.bank_transaction_model import BankTransactionModel, BankTransactionDirection
 
 
 def get_bank_transaction_by_external_id(
@@ -28,3 +28,21 @@ def add_bank_transaction(
     db.flush()
 
     return bank_transaction
+
+def get_unprocessed_outgoing_transactions(
+    db: Session,
+    user_id: int
+):
+    return (
+        db.query(BankTransactionModel)
+        .filter(
+            BankTransactionModel.user_id == user_id,
+            BankTransactionModel.direction == BankTransactionDirection.OUTGOING,
+            BankTransactionModel.processed_at.is_(None)
+        )
+        .order_by(
+            BankTransactionModel.transaction_date.asc(),
+            BankTransactionModel.id.asc()
+        )
+        .all()
+    )

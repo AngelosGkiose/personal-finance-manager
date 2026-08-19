@@ -28,13 +28,21 @@ class ExpenseModel(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc))
-
+    bank_transaction_id = Column(
+        Integer,
+        ForeignKey("bank_transactions.id"),
+        nullable=True,
+        unique=True
+    )
     user_id = Column(Integer,ForeignKey('users.id'),nullable=False)
     category_id = Column(Integer,ForeignKey('categories.id'),nullable=False)
 
     user=relationship("UserModel",back_populates="expenses")
     category=relationship("CategoryModel",back_populates="expenses")
     obligations = relationship("ObligationModel", back_populates="expense",uselist=False)
-
+    bank_transaction = relationship(
+        "BankTransactionModel",
+        back_populates="expense"
+    )
 
 
