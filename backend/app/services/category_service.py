@@ -35,6 +35,11 @@ def update_category_service(category_id:int,data:CategoryUpdate,current_user:Use
     if (existing_category is not None
             and existing_category.id != category.id):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Category already exists")
+    if category.is_system:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="System category cannot be deleted"
+        )
     category.name=data.name
     return update_category_repo(db,category)
 
@@ -42,6 +47,11 @@ def delete_category_service(category_id:int,current_user:UserModel,db:Session):
     category=get_category_by_id(db,category_id,current_user.id)
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Category not found")
+    if category.is_system:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="System category cannot be deleted"
+        )
     delete_category_repo(db,category)
 
 def create_default_categories_for_user(

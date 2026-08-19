@@ -30,10 +30,10 @@ class UserModel(Base):
         "BankTransactionModel",
         back_populates="user"
     )
-categorization_rules = relationship(
-    "CategorizationRuleModel",
-    back_populates="user"
-)
+    categorization_rules = relationship(
+        "CategorizationRuleModel",
+        back_populates="user"
+    )
 
 
 

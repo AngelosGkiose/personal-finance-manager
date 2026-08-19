@@ -33,7 +33,7 @@ class CategoryModel(Base):
     expenses = relationship("ExpenseModel",back_populates="category")
     obligations = relationship("ObligationModel", back_populates="category")
 
-categorization_rules = relationship(
-    "CategorizationRuleModel",
-    back_populates="category"
-)
+    categorization_rules = relationship(
+        "CategorizationRuleModel",
+        back_populates="category"
+    )
