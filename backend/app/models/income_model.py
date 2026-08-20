@@ -28,8 +28,14 @@ class IncomeModel(Base):
     amount = Column(Numeric(12, 2),nullable=False)
     source = Column(String(255),nullable=False)
     status = Column(SQLEnum(IncomeStatus), nullable=False,default=IncomeStatus.EXPECTED)
-    expected_date = Column(Date,nullable=False)
+    expected_date = Column(Date,nullable=True)
     received_date = Column(Date,nullable=True)
+    bank_transaction_id = Column(
+        Integer,
+        ForeignKey("bank_transactions.id"),
+        nullable=True,
+        unique=True
+    )
     user_id = Column(Integer,ForeignKey('users.id'),nullable=False)
     recurring_income_rule_id = Column(
         Integer,
@@ -49,4 +55,8 @@ class IncomeModel(Base):
     recurring_income_rule = relationship(
         "RecurringIncomeRuleModel",
         back_populates="incomes"
+    )
+    bank_transaction = relationship(
+        "BankTransactionModel",
+        back_populates="income"
     )

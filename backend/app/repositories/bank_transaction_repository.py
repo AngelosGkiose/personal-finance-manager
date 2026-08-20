@@ -46,3 +46,22 @@ def get_unprocessed_outgoing_transactions(
         )
         .all()
     )
+
+def get_unprocessed_incoming_transactions(
+    db: Session,
+    current_user_id: int
+):
+    return (
+        db.query(BankTransactionModel)
+        .filter(
+            BankTransactionModel.user_id == current_user_id,
+            BankTransactionModel.direction
+            == BankTransactionDirection.INCOMING,
+            BankTransactionModel.processed_at.is_(None)
+        )
+        .order_by(
+            BankTransactionModel.transaction_date.asc(),
+            BankTransactionModel.id.asc()
+        )
+        .all()
+    )

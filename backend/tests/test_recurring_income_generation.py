@@ -86,8 +86,7 @@ def test_recurring_income_rules_generate_expected_incomes_without_duplicates(
     assert second_income.amount == Decimal("500.00")
     assert second_income.status == IncomeStatus.EXPECTED
 
-    # expected_day = 31
-    # February 2027 ends on the 28th
+
     assert second_income.expected_date.day == 28
 
     second_generation = (

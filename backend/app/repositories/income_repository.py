@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, extract
 from sqlalchemy.orm import Session
 
 
@@ -63,6 +63,26 @@ def get_income_by_recurring_rule_and_expected_date(
             IncomeModel.recurring_income_rule_id
             == recurring_income_rule_id,
             IncomeModel.expected_date == expected_date
+        )
+        .first()
+    )
+
+def get_expected_income_by_recurring_rule_for_month(
+    db: Session,
+    current_user_id: int,
+    recurring_income_rule_id: int,
+    year: int,
+    month: int
+):
+    return (
+        db.query(IncomeModel)
+        .filter(
+            IncomeModel.user_id == current_user_id,
+            IncomeModel.recurring_income_rule_id
+            == recurring_income_rule_id,
+            IncomeModel.status == IncomeStatus.EXPECTED,
+            extract("year", IncomeModel.expected_date) == year,
+            extract("month", IncomeModel.expected_date) == month
         )
         .first()
     )

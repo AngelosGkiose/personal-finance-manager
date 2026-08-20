@@ -196,6 +196,7 @@ def delete_recurring_income_rule_service(
     except SQLAlchemyError:
         db.rollback()
         raise
+
 def generate_expected_incomes_for_month_service(
     year: int,
     month: int,

@@ -102,3 +102,8 @@ class BankTransactionModel(Base):
         back_populates="bank_transaction",
         uselist=False
     )
+    income = relationship(
+        "IncomeModel",
+        back_populates="bank_transaction",
+        uselist=False
+    )
