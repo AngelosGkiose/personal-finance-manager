@@ -44,3 +44,16 @@ class BankSyncResult(BaseModel):
 class BankTransactionProcessingResult(BaseModel):
     found: int
     processed: int
+
+class BankAutomationResult(BaseModel):
+    generated_expected_incomes: int
+
+    transactions_received: int
+    transactions_created: int
+    transactions_skipped: int
+
+    outgoing_found: int
+    outgoing_processed: int
+
+    incoming_found: int
+    incoming_processed: int
