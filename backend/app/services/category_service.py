@@ -38,7 +38,7 @@ def update_category_service(category_id:int,data:CategoryUpdate,current_user:Use
     if category.is_system:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="System category cannot be deleted"
+            detail="System category cannot be updated"
         )
     category.name=data.name
     return update_category_repo(db,category)
