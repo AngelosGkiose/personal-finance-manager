@@ -9,11 +9,98 @@ from app.repositories import (
     category_repository,
     categorization_rule_repository,
 )
+import re
+import unicodedata
+MIXED_SCRIPT_CONFUSABLES = str.maketrans({
+    "Α": "A",
+    "Β": "B",
+    "Ε": "E",
+    "Ζ": "Z",
+    "Η": "H",
+    "Ι": "I",
+    "Κ": "K",
+    "Μ": "M",
+    "Ν": "N",
+    "Ο": "O",
+    "Ρ": "P",
+    "Τ": "T",
+    "Υ": "Y",
+    "Χ": "X",
+})
 
 
+GREEK_TO_LATIN = str.maketrans({
+    "Α": "A",
+    "Β": "B",
+    "Γ": "G",
+    "Δ": "D",
+    "Ε": "E",
+    "Ζ": "Z",
+    "Η": "H",
+    "Θ": "TH",
+    "Ι": "I",
+    "Κ": "K",
+    "Λ": "L",
+    "Μ": "M",
+    "Ν": "N",
+    "Ξ": "X",
+    "Ο": "O",
+    "Π": "P",
+    "Ρ": "R",
+    "Σ": "S",
+    "Τ": "T",
+    "Υ": "Y",
+    "Φ": "F",
+    "Χ": "X",
+    "Ψ": "PS",
+    "Ω": "O",
+})
+def normalize_alpha_segment(segment: str) -> str:
+    has_latin = any(
+        "A" <= char <= "Z"
+        for char in segment
+    )
+
+    has_greek = any(
+        "\u0370" <= char <= "\u03ff"
+        for char in segment
+    )
+
+    if has_latin and has_greek:
+        return segment.translate(
+            MIXED_SCRIPT_CONFUSABLES
+        )
+
+    if has_greek:
+        return segment.translate(
+            GREEK_TO_LATIN
+        )
+
+    return segment
 def normalize_transaction_text(value: str) -> str:
+    value = value.strip().upper()
+
+    value = unicodedata.normalize(
+        "NFD",
+        value
+    )
+
+    value = "".join(
+        char
+        for char in value
+        if not unicodedata.combining(char)
+    )
+
+    value = re.sub(
+        r"[A-ZΑ-Ω]+",
+        lambda match: normalize_alpha_segment(
+            match.group()
+        ),
+        value
+    )
+
     return " ".join(
-        value.strip().upper().split()
+        value.split()
     )
 
 

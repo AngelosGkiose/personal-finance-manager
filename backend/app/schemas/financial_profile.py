@@ -37,16 +37,21 @@ class RecurringIncomeRuleSeed(BaseModel):
 
 
 class FinancialProfileSeed(BaseModel):
-    categories: list[str] = []
+    categories: list[str] = Field(
+        default_factory=list
+    )
 
     categorization_rules: list[
         CategorizationRuleSeed
-    ] = []
+    ] = Field(
+        default_factory=list
+    )
 
     recurring_income_rules: list[
         RecurringIncomeRuleSeed
-    ] = []
-
+    ] = Field(
+        default_factory=list
+    )
 
 class FinancialProfileInitializationResult(BaseModel):
     categories_created: int

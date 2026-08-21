@@ -10,6 +10,7 @@ from app.schemas.financial_profile import (
     FinancialProfileSeed,
     RecurringIncomeRuleSeed,
 )
+from app.services.categorization_service import normalize_transaction_text
 
 from app.services.financial_profile_initialization_service import (
     initialize_financial_profile_service,
@@ -158,14 +159,18 @@ def test_financial_profile_initialization_is_idempotent_and_extendable(
 
     assert payroll_rule.expected_amount == Decimal("2448.52")
     assert payroll_rule.expected_day == 30
-    assert payroll_rule.transaction_keyword == "PAYROLL"
+    assert payroll_rule.transaction_keyword == normalize_transaction_text(
+        "PAYROLL"
+    )
     assert payroll_rule.is_active is True
 
     efka_rule = recurring_by_name["EFKA Pension"]
 
     assert efka_rule.expected_amount == Decimal("393.81")
     assert efka_rule.expected_day == 24
-    assert efka_rule.transaction_keyword == "ΣΥΝΤ.Ε.Φ.Κ.Α."
+    assert efka_rule.transaction_keyword == normalize_transaction_text(
+        "ΣΥΝΤ.Ε.Φ.Κ.Α."
+    )
     assert efka_rule.is_active is True
 
     # -------------------------------------------------
